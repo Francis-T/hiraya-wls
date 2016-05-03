@@ -18,6 +18,13 @@ void setup()
     delay(1000);
     
     comm_discardData();
+
+    /* uncomment this if you want to change the target 
+     *  mobile number from the code */
+    eeprom_saveProperty(TARGET_MOBILE, "9179825228", 10);
+
+    String str = "Hello World!";
+    gsm_sendMessage(str.c_str(), str.length());
     
     return;
 }
@@ -41,20 +48,25 @@ void processSerialInput()
         {
             return;
         }
+        comm_displayRecvData();
     }
     
     /* Process the received data if there are bytes read */
     if (_iRecvBufLen > 0)
     {
+      /*
       if (proc_processMessage(_aRecvBuf, _iRecvBufLen) < STATUS_OK)
       {
           return;
       }
+      */
       
       #ifndef USE_ARDUINO
       StubGsmController.processInput(_aRecvBuf, _iRecvBufLen);
       #endif
     }
+
+    _iRecvBufLen = 0;
 
     /* Clear our receive buffer */
     memset(_aRecvBuf, 0, sizeof(_aRecvBuf));
@@ -334,7 +346,7 @@ int gsm_sendMessage(const char* aMsg, int iLen)
     memset(aPropData, 0, 16);
 
     eeprom_loadProperty(NODE_NAME, aPropData, 16);
-    strcat(aCompleteMsg, aPropData);
+    strcat(aCompleteMsg, "Hiraya ");
     strcat(aCompleteMsg, ": ");
     strcat(aCompleteMsg, aMsg);
 
